@@ -1,0 +1,30 @@
+1.Player meroll dadu utk menentukan pemain pertama hingga ke empat (player dg dadu tertinggi adlh player 1)
+
+2.dalam 1 map (12x12) dibagi 4 bagian untuk setiap player ,1 bagian (6x6)
+
+3.dalam 1 daerah player ,diberi 5 obstacle yg boleh ditentukan oleh player tsb
+
+4.player bergergerak secara bergiliran, dgn model maju atau mundur seperti catur ,max gerak 4 kotak 
+
+5.player dpt menyerang musuhnya dgn model line of sight ,dgn syarat tdk ada obstacle atau halangan dalam garis tembak nya
+
+6.setiap player dpt mngubah halangan/obstacle nya (cth :sbg halangan lawan menyerang) setelah melewati 5 turn ,atau terserang oleh player lain sebanyak 3 kali
+
+7.damage per player ditentukan oleh jarak ,semakin dkt semaik bsr dmg nya (jaraknya, jika x+y lebih dr 15 maka dmg nya 50% , jika x+y antara 6-14 maka dmg nya 70% , jika x+y kurang dr 5 maka 100%
+cth : kordinat (x,y)(4,5) = 4+5=9,maka dmnya 70%) damage penuh (100%)adalah 50 (atkcer)50%>25 ,70%>35, 100%>50
+dmg penuh defender 30 ,50%>15,70%>21,100%>30
+
+
+
+8.player memiliki Hp total sebanyak 300 putih = 100 hitam = 200
+
+9.ketika player diserang tdk diperbolehkan membalas serangan sebelumnya 
+
+
+
+
+pion hitam dn putih
+hutam ,hp=200 dmg max=30
+putih ,hp=100 dmg max=50
+
+hitam hanya bisa menyerang jika pion putih mati,jika pion hitam mati diawala maka player dianggap slesai bermain
